@@ -32,7 +32,7 @@ it will take to defrost the freezer.
 
 *A possible problem with this approach is that the freezer is frosting up at a remarkable rate.
 It might need defrosting on a monthly or even more frequent basis! Working on some mitigation
-strategies: better cellar insulation; baffles to keep the ducting shot while the fan is off;
+strategies: better cellar insulation; baffles to close off the ducting while the fan is off;
 better seal of the foam freezer lid.*
 
 ## Hardware and software
