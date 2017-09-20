@@ -9,6 +9,8 @@ This system uses a domestic freezer filled with chilled mass
 control system intermittently draws chilled air into the cellar to maintain
 temperature stability.
 
+![cellarduino](https://user-images.githubusercontent.com/5116094/30630801-ee0aa56c-9d96-11e7-9ad0-f2e42f6eff60.jpg)
+
 About the machinery:
 
 We're using a 3.5 cu ft top-loading chest freezer and the room being
@@ -30,6 +32,15 @@ records the log information in a Google Sheets spreadsheet.
 *TO DO: The data in the spreadsheet is summarized and archived periodically
 by a time-based Apps Script trigger.*
 
+![](https://docs.google.com/spreadsheets/d/e/2PACX-1vREUiSFU5l1Lzm_zp1cpYfo3B8JV4Mn41EFr_9RZDIjNZDpZcTGQsGl5bASn3xf5UZYY8FwSj9jsuK-/pubhtml?gid=388140311&single=true)
+
+### Arduino source code
+
 The Arduino code is contained in [DHT_handler.py](/path/to/be/determined)
 
-The laptop code runs in Python 2.7, and is contained in the following files
+### Laptop/concentrator source code
+The laptop code runs in Python 2.7, and is contained in the following files:
+
+* [report-temp.py](/path/to/be/determined) -- The basic counters, logic, and message formatting code.
+* [log-temps.py](/path/to/be/determined) -- Interface to Google Sheets API.
+
