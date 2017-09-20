@@ -32,7 +32,7 @@ records the log information in a Google Sheets spreadsheet.
 *TO DO: The data in the spreadsheet is summarized and archived periodically
 by a time-based Apps Script trigger.*
 
-![](https://docs.google.com/spreadsheets/d/e/2PACX-1vREUiSFU5l1Lzm_zp1cpYfo3B8JV4Mn41EFr_9RZDIjNZDpZcTGQsGl5bASn3xf5UZYY8FwSj9jsuK-/pubhtml?gid=388140311&single=true)
+![](https://user-images.githubusercontent.com/5116094/30633128-6a16dee8-9d9f-11e7-8dac-6e226ea0e690.png)
 
 ### Arduino source code
 
