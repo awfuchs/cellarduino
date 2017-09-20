@@ -43,13 +43,14 @@ by a time-based Apps Script trigger.*
 
 ### Arduino source code
 
-The Arduino code is contained in [DHT_handler.py](/path/to/be/determined)
+The Arduino code is contained in [cellar_handler.ino](https://github.com/awfuchs/cellarduino/blob/master/cellar_handler.ino)
 
 ### Laptop/concentrator source code
 The laptop code runs in Python 2.7, and is contained in the following files:
 
-* [report-temp.py](/path/to/be/determined) -- The  serial receiving, basic counters, logic, and message formatting code.
-* [logtemps.py](/path/to/be/determined) -- Connects to Google Sheets API.
+* [report_temps.py](https://github.com/awfuchs/cellarduino/blob/master/report_temps.py) -- The 
+  serial receiving, basic counters, logic, and message formatting code.
+* [logtemps.py](https://github.com/awfuchs/cellarduino/blob/master/logtemps.py) -- Connects to Google Sheets API.
 
 ## Planned improvements
 
