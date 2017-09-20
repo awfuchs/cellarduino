@@ -2,8 +2,12 @@
 
 This project implements the software component of a wine cellar cooling system.
 
-[Mechanical systems](#user-content-mechanical-systems)
+* [Mechanical systems](#user-content-mechanical-systems)
 
+* [Hardware and software](#user-content-hardware-and-software)
+    * [Arduino source code](#user-content-arduino-source-code)
+    * [Laptop source code](#user-content-laptop-source-code)
+* [Planned improvements](#user-content-planned-improvements)
 
 ## Mechanical systems
 
@@ -53,3 +57,4 @@ The laptop code runs in Python 2.7, and is contained in the following files:
 * Google Apps Script periodic trigger to clean up spreadsheet and archive data summaries.
 * Adaptive goal temperature to relax constraints when fan duty cycle exceeds a defined threshold. 
   (Allow the cellar to warm slightly during heat wave, rather than melt the freezer.)
+* Provide serial comms from the laptop down to the Arduino to change configurations without re-flashing.
