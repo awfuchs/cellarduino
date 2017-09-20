@@ -26,6 +26,15 @@ cooled is a closet of about 75 cu ft.
 The top of the freezer is replaced with 2" insulating board, with two
 ports in the top, connected by insulated duct to the wine closet.
 
+The freezer will need defrosting from time to time. The plan is to swap the ducts from
+the freezer to an ice chest (filled with dry ice and heat sinks?) for the day or so that
+it will take to defrost the freezer.
+
+*A possible problem with this approach is that the freezer is frosting up at a remarkable rate.
+It might need defrosting on a monthly or even more frequent basis! Working on some mitigation
+strategies: better cellar insulation; baffles to keep the ducting shot while the fan is off;
+better seal of the foam freezer lid.*
+
 ## Hardware and software
 
 An Arduino reads a DHT22 temperature sensor, turns a fan on/off to maintain
@@ -38,6 +47,9 @@ records the log information in a Google Sheets spreadsheet.
 
 *TO DO: The data in the spreadsheet is summarized and archived periodically
 by a time-based Apps Script trigger.*
+
+The spreadsheet graphs the data as shown below. For each time period (typically 10 minutes), the display
+shows min/max/average temperatures and the fan duty cycle.
 
 ![](https://user-images.githubusercontent.com/5116094/30633128-6a16dee8-9d9f-11e7-8dac-6e226ea0e690.png)
 
