@@ -50,7 +50,7 @@ records the log information in a Google Sheets spreadsheet.
 by a time-based Apps Script trigger.*
 
 The spreadsheet graphs the data as shown below. For each time period (typically 10 minutes), the display
-shows min/max/average temperatures and the fan duty cycle.
+shows min/max/average temperatures and the fan [duty cycle](https://en.wikipedia.org/wiki/Duty_cycle).
 
 ![](https://user-images.githubusercontent.com/5116094/30633128-6a16dee8-9d9f-11e7-8dac-6e226ea0e690.png)
 
