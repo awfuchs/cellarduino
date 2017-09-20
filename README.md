@@ -25,7 +25,11 @@ temperature, and sends log information to the serial port.
 A laptop captures the log information from the Arduino, aggregates it, and
 records the log information in a Google Sheets spreadsheet.
 
+![](https://user-images.githubusercontent.com/5116094/30629921-21f33078-9d93-11e7-8fad-adea6ea4f3e6.png)
+
 *TO DO: The data in the spreadsheet is summarized and archived periodically
 by a time-based Apps Script trigger.*
 
+The Arduino code is contained in [DHT_handler.py](/path/to/be/determined)
 
+The laptop code runs in Python 2.7, and is contained in the following files
