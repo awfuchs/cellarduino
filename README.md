@@ -4,8 +4,8 @@ This project implements the software component of a wine cellar cooling system.
 
 ## Mechanical systems
 
-This system uses a domestic freezer filled with chilled mass
-(water, or possibly scrap aluminum or heat sinks) as a reservoir of cold; the
+This system uses a domestic freezer filled with chilled mass (water bottles, or
+possibly scrap aluminum or heat sinks) as a reservoir of cold; the
 control system intermittently draws chilled air into the cellar to maintain
 temperature stability.
 
