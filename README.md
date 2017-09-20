@@ -7,6 +7,7 @@ This project implements the software component of a wine cellar cooling system.
 * [Hardware and software](#user-content-hardware-and-software)
     * [Arduino source code](#user-content-arduino-source-code)
     * [Laptop source code](#user-content-laptop-source-code)
+    * [Spreadsheet archiving source code](#user-content-spreadsheet-archiving-source-code)
 * [Planned improvements](#user-content-planned-improvements)
 
 ## Mechanical systems
@@ -63,6 +64,14 @@ The laptop code runs in Python 2.7, and is contained in the following files:
 * [report_temps.py](https://github.com/awfuchs/cellarduino/blob/master/report_temps.py) -- The 
   serial receiving, basic counters, logic, and message formatting code.
 * [logtemps.py](https://github.com/awfuchs/cellarduino/blob/master/logtemps.py) -- Connects to Google Sheets API.
+
+### Spreadsheet archiving source code
+
+The laptop keeps adding rows to the Google Sheets spreadsheet. To keep the spreadsheet from growing too large,
+the following [Apps Script](https://developers.google.com/apps-script/) code does some archiving and cleanup; the code is launched by a time-based trigger
+set in the Apps Script project.
+
+* [cellarduino_cleano](https://github.com/awfuchs/cellarduino/blob/master/cellarduino_cleano.gs)
 
 ## Planned improvements
 
