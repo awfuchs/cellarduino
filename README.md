@@ -41,6 +41,12 @@ The Arduino code is contained in [DHT_handler.py](/path/to/be/determined)
 ### Laptop/concentrator source code
 The laptop code runs in Python 2.7, and is contained in the following files:
 
-* [report-temp.py](/path/to/be/determined) -- The basic counters, logic, and message formatting code.
-* [log-temps.py](/path/to/be/determined) -- Interface to Google Sheets API.
+* [report-temp.py](/path/to/be/determined) -- The  serial receiving, basic counters, logic, and message formatting code.
+* [logtemps.py](/path/to/be/determined) -- Connects to Google Sheets API.
 
+## Planned improvements
+
+* General code health cleanup.
+* Google Apps Script periodic trigger to clean up spreadsheet and archive data summaries.
+* Adaptive goal temperature to relax constraints when fan duty cycle exceeds a defined threshold. 
+  (Allow the cellar to warm slightly during heat wave, rather than melt the freezer.)
