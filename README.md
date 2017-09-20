@@ -2,6 +2,9 @@
 
 This project implements the software component of a wine cellar cooling system.
 
+[Mechanical systems](#user-content-mechanical-systems)
+
+
 ## Mechanical systems
 
 This system uses a domestic freezer filled with chilled mass (water bottles, or
