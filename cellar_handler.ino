@@ -1,7 +1,10 @@
+// Example testing sketch for various DHT humidity/temperature sensors
+// Written by ladyada, public domain
+
 #include "DHT.h"
 
 #define DHTPIN 3     // what digital pin we're connected to
-#define TARGET_TEMP 19
+#define TARGET_TEMP 18.5
 
 // Uncomment whatever type you're using!
 //#define DHTTYPE DHT11   // DHT 11
@@ -73,8 +76,18 @@ void loop() {
   } else {
     Serial.print("IDLE -- ");
   }
+  //Serial.print("Humidity: ");
+  //Serial.print(h);
+  //Serial.print(" %\t");
+  //Serial.print("Temperature: ");
   Serial.print(t);
   Serial.print(" *C ");
   Serial.print(f);
   Serial.println(" *F");
+  // Serial.print(" *F\t");
+  // Serial.print("Heat index: ");
+  // Serial.print(hic);
+  // Serial.print(" *C ");
+  // Serial.print(hif);
+  // Serial.println(" *F");
 }
