@@ -79,7 +79,9 @@ set in the Apps Script project.
 
 &#10004; Google Apps Script periodic trigger to clean up spreadsheet and archive data summaries.
 
-&#10063; Adaptive goal temperature to relax constraints when fan duty cycle exceeds a defined threshold. 
+&#10004; Adaptive goal temperature to relax constraints when fan duty cycle exceeds a defined threshold. 
 (Allow the cellar to warm slightly during heat wave, rather than melt the freezer.)
 
 &#10063; Provide serial comms from the laptop down to the Arduino to change configurations without re-flashing.
+
+&#10063; Alert generation and processing. Events include: adapt up, adapt down, door open, door close
