@@ -6,11 +6,14 @@ PORT = "/dev/tty.usbmodem621"
 BAUD = 9600
 
 RPT_INTERVAL = 600 # seconds
+LOG_TO_CLOUD = True
 
 # incoming data field definitions
 
 FAN = 0
 CELSIUS = 2
+HUMIDITY = 4
+GOAL_TEMP = 6
 
 ser = serial.Serial(PORT, BAUD)
 
@@ -43,7 +46,8 @@ while 1:
     displayDate = time.strftime("%b %d, %Y")
     displayTime = time.strftime("%H:%M")
     currentMinute  = time.strftime("%M")
-    print("%s Temp: %s C, fan %s (prev duty cycle %.0f%%)" % (displayTime, data[CELSIUS], data[FAN], DC*100))
+    print("%s Temp: %s C, Goal: %s Fan %s (prev duty cycle %.0f%%)"
+          % (displayTime, data[CELSIUS], data[GOAL_TEMP], data[FAN], DC*100))
     if data[FAN] != "IDLE":
       fanOns += 1
     else:
@@ -69,7 +73,8 @@ while 1:
 
       #print("%s %s Temps: min %s, max %s, avg %s, fan duty cycle %.0f%%" % (displayDate, displayTime, minTemp, maxTemp, avgTemp, DC*100))
 
-      log_temperature_data( displayDate, displayTime, goalTempSpec, goalTempAdap, avgTemp, minTemp, maxTemp, DC )
+      if LOG_TO_CLOUD:
+        log_temperature_data( displayDate, displayTime, goalTempSpec, goalTempAdap, avgTemp, minTemp, maxTemp, DC )
 
       # --- reset accumulators ---
       lastReport = rawTime 

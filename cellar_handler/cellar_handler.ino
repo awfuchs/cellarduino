@@ -5,7 +5,7 @@
 #include "DHT.h"
 
 #define DHTPIN 3     // what digital pin we're connected to
-#define TARGET_TEMP 18.5
+#define TARGET_TEMP 17.5
 #define NEVER_EXCEED 25         // Don’t ever adapt higher than 77*F
 
 #define USEC_PER_SAMPLE 5000    // Five seconds per sample
@@ -24,10 +24,10 @@ bool fanOn=false;
 
 // vars for adaptive temperature and other duty-cycle driven things
 float adapTemp = TARGET_TEMP;
-int onesPerPeriod = [0, 0, 0, 0]; // Duty cycle counter per period
-int period = 0;                   // Counts 0..3 and repeat
-int samplesThisPeriod = 0;        // Counts 0..119 and repeats
-
+int onesPerPeriod[4] = { 0 }; // Duty cycle counter per period
+int period = 0;               // Counts 0..3 and repeat
+int samplesThisPeriod = 0;    // Counts 0..119 and repeats
+int totalOnes = 0;            // Counts only samples with fan on
 
 // =========== The Arduino setup function ===========
 void setup() {
@@ -104,14 +104,18 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   else              { fanOn=true; digitalWrite(LED_BUILTIN, HIGH); }
 
   // ...and finally report data.
-  
+
+  // fields 0/1
   if( fanOn==true ) { Serial.print("OPERATING -- "); }
   else              { Serial.print("IDLE -- "); }
   
-  Serial.print(t);
-  Serial.print(" *C ");
-  Serial.print(f);
-  Serial.print(" *F");
-  Serial.print(h);
-  Serial.println("%");
+  Serial.print(t);          // 2
+  Serial.print(" *C ");     // 3
+  //Serial.print(f);
+  //Serial.print(" *F ");
+  Serial.print(h);          // 4
+  Serial.print(" %  ");     // 5
+  Serial.print(adapTemp);   // 6
+  Serial.print(" *C goal");
+  Serial.println(" ");
 }
