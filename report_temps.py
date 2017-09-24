@@ -48,7 +48,7 @@ while 1:
     displayTime = time.strftime("%H:%M")
     currentMinute  = time.strftime("%M")
 
-    if data[FAN] = "ALERT":
+    if data[FAN] == "ALERT":
       print("%s ALERT! The adaptive temperature has changed. The goal is now %s Celsius."
       % (displayTime, data[CELSIUS]))
       if LOG_TO_CLOUD:
