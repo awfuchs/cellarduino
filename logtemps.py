@@ -73,6 +73,32 @@ def log_temperature_data( date, time, goalTempSpec, goalTempAdap, tempAvg, tempM
     valueInputOption='USER_ENTERED', body=body).execute()
 
 
+def log_alert( date, time, text ):
+  credentials = get_credentials()
+  http = credentials.authorize(httplib2.Http())
+  discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                  'version=v4')
+  service = discovery.build('sheets', 'v4', http=http,
+                            discoveryServiceUrl=discoveryUrl)
+
+  spreadsheetId = '1QZbcxv_Gfjh-SIt0MgurOlJsf4P5iUfyNuYgqJ87jD8'
+  rangeName = 'Alerts!A:Z'
+
+  values = [
+    [
+      date,
+      time,
+      text
+    ]
+  ]
+  body = {
+    'values': values
+  }
+  result = service.spreadsheets().values().append(
+    spreadsheetId=spreadsheetId, range=rangeName,
+    valueInputOption='USER_ENTERED', body=body).execute()
+
+
 if __name__ == '__main__':
     main()
 
