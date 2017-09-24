@@ -4,42 +4,46 @@
 
 #include "DHT.h"
 
-#define DHTPIN 3     // what digital pin we're connected to
-#define TARGET_TEMP 17.5
-#define NEVER_EXCEED 25         // Don’t ever adapt higher than 77*F
+#define TARGET_TEMP 17.5    // Maintain this temp if you can
+#define NEVER_EXCEED 25     // Don’t ever adapt higher than 77*F
 
 #define USEC_PER_SAMPLE 5000    // Five seconds per sample
-#define SAMPLES_PER_PERIOD 120  // Ten minute evaluation period
+#define SAMPLES_PER_PERIOD 120  // Ten minute evaluation period for duty cycle
 
-// Set the DHT type: uncomment whatever type you're using!
-//#define DHTTYPE DHT11   // DHT 11
-#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
-//#define DHTTYPE DHT21   // DHT 21 (AM2301)
-
-// Initialize DHT sensor.
+// --- DHT definitions ---
+// Set pin and type
+#define DHTPIN 3            // Which pin has the sensor
+#define DHTTYPE DHT22       // DHT 22  (AM2302), AM2321
+// Initialize sensor
 DHT dht(DHTPIN, DHTTYPE);
 
 int numSamples=0;
 bool fanOn=false;
 
-// vars for adaptive temperature and other duty-cycle driven things
+// --- adaptive temperature, duty cycle ---
 float adapTemp = TARGET_TEMP;
 int onesPerPeriod[4] = { 0 }; // Duty cycle counter per period
 int period = 0;               // Counts 0..3 and repeat
 int samplesThisPeriod = 0;    // Counts 0..119 and repeats
 int totalOnes = 0;            // Counts only samples with fan on
 
+// --- alert definitions ---
+bool doorOpen    = false;
+bool doorClose   = false;
+bool tempAdapted = false;
+
+
+
 // =========== The Arduino setup function ===========
 void setup() {
   Serial.begin(9600);
-  Serial.println("DHTxx test!");
 
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
 
-
   dht.begin();
 }
+
 
 // =========== The Arduino loop ==============
 void loop() {
@@ -56,27 +60,29 @@ void loop() {
 // ...handle duty cycle processing...
 
 if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
-  // --- end of period, time to reckon, adapt, and wrap ---
+  // --- end of period; now time to reckon, adapt, and wrap ---
 
-  // reckon
+  // reckon the overall duty cycle
   totalOnes =  onesPerPeriod[0];
   totalOnes += onesPerPeriod[1];
   totalOnes += onesPerPeriod[2];
   totalOnes += onesPerPeriod[3];
 
   
-  // adapt
+  // adapt temperature if needed
   if (totalOnes > SAMPLES_PER_PERIOD && adapTemp <= NEVER_EXCEED) {
     // --- More than 25% duty cycle over 4 periods, increase temp  ---
     adapTemp += 0.1;
+    tempAdapted = True;
   }
   else if (totalOnes < SAMPLES_PER_PERIOD/2) {
     if (adapTemp > TARGET_TEMP) {
       // --- Less than 12.5% duty cycle, if above target temp, reduce temp ---
       adapTemp -= 0.1;
+      tempAdapted = True;
     }
   }
-  // wrap
+  // wrap the duty cycle counters
   period = (period + 1) % 4;  // Increment the period 0,1,2,3,0,1,2,3...
   samplesThisPeriod = 0;
   onesPerPeriod[period] = 0;
@@ -98,24 +104,36 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
     return;
   }
 
-  // ...adjust the cooling...
+  // ...adjust the fan state...
   
   if( t<=adapTemp ) { fanOn=false; digitalWrite(LED_BUILTIN, LOW); }
   else              { fanOn=true; digitalWrite(LED_BUILTIN, HIGH); }
 
   // ...and finally report data.
 
+  // alerts first
+
+  if( tempAdapted ) {
+    Serial.print("ALERT -- ");
+    Serial.print(adapTemp);
+    Serial.println(" is the new temperature goal");
+    tempAdapted=False;
+  }
+
+  // Now the reporting data
+
   // fields 0/1
+
   if( fanOn==true ) { Serial.print("OPERATING -- "); }
   else              { Serial.print("IDLE -- "); }
   
-  Serial.print(t);          // 2
-  Serial.print(" *C ");     // 3
+  Serial.print(t);          // Field 2
+  Serial.print(" *C ");     // Field 3
   //Serial.print(f);
   //Serial.print(" *F ");
-  Serial.print(h);          // 4
-  Serial.print(" %  ");     // 5
-  Serial.print(adapTemp);   // 6
+  Serial.print(h);          // Field 4
+  Serial.print(" %  ");     // Field 5
+  Serial.print(adapTemp);   // Field 6
   Serial.print(" *C goal");
   Serial.println(" ");
 }

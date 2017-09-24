@@ -40,41 +40,49 @@ while 1:
 
   # all processing happens only when there are input lines
   if len(data) >2:
+
     # --- set up the current time info ---
     rawTime = time.time()
     theTime = time.localtime(rawTime)
     displayDate = time.strftime("%b %d, %Y")
     displayTime = time.strftime("%H:%M")
     currentMinute  = time.strftime("%M")
-    print("%s Temp: %s C, Goal: %s Fan %s (prev duty cycle %.0f%%)"
-          % (displayTime, data[CELSIUS], data[GOAL_TEMP], data[FAN], DC*100))
-    if data[FAN] != "IDLE":
-      fanOns += 1
-    else:
-      fanOffs += 1
-    # --- keep the min, max, and samples for avgt ---
-    theTemp = float(data[CELSIUS])
-    maxTemp = max(maxTemp, theTemp)
-    minTemp = min(minTemp, theTemp)
-    allTemp.append(theTemp)
 
-    modMinutes = int(currentMinute) % int(RPT_INTERVAL/60)
-    #if rawTime > lastReport+RPT_INTERVAL:
-    if (prevMinute != currentMinute) and (modMinutes == 0):
-      prevMinute = currentMinute
-      print("Reporting")
-      fanOnOffs = fanOns + fanOffs
-      if fanOnOffs > 0:
-        DC = fanOns / float(fanOnOffs)
-      else:
-        DC = 1
-
-      avgTemp = numpy.mean(allTemp)
-
-      #print("%s %s Temps: min %s, max %s, avg %s, fan duty cycle %.0f%%" % (displayDate, displayTime, minTemp, maxTemp, avgTemp, DC*100))
-
+    if data[FAN] = "ALERT":
+      print("%s ALERT! The adaptive temperature has changed. The goal is now %s Celsius."
+      % (displayTime, data[CELSIUS]))
       if LOG_TO_CLOUD:
-        log_temperature_data( displayDate, displayTime, goalTempSpec, goalTempAdap, avgTemp, minTemp, maxTemp, DC )
+        log_alert( displayDate, displayTime, "Adaptive temperature now %s" % data[CELSIUS])
+    else:
+      print("%s Temp: %s C, Goal: %s Fan %s (prev duty cycle %.0f%%)"
+            % (displayTime, data[CELSIUS], data[GOAL_TEMP], data[FAN], DC*100))
+      if data[FAN] != "IDLE":
+        fanOns += 1
+      else:
+        fanOffs += 1
+      # --- keep the min, max, and samples for avgt ---
+      theTemp = float(data[CELSIUS])
+      maxTemp = max(maxTemp, theTemp)
+      minTemp = min(minTemp, theTemp)
+      allTemp.append(theTemp)
+  
+      modMinutes = int(currentMinute) % int(RPT_INTERVAL/60)
+      #if rawTime > lastReport+RPT_INTERVAL:
+      if (prevMinute != currentMinute) and (modMinutes == 0):
+        prevMinute = currentMinute
+        print("Reporting")
+        fanOnOffs = fanOns + fanOffs
+        if fanOnOffs > 0:
+          DC = fanOns / float(fanOnOffs)
+        else:
+          DC = 1
+  
+        avgTemp = numpy.mean(allTemp)
+  
+        #print("%s %s Temps: min %s, max %s, avg %s, fan duty cycle %.0f%%" % (displayDate, displayTime, minTemp, maxTemp, avgTemp, DC*100))
+  
+        if LOG_TO_CLOUD:
+          log_temperature_data( displayDate, displayTime, goalTempSpec, goalTempAdap, avgTemp, minTemp, maxTemp, DC )
 
       # --- reset accumulators ---
       lastReport = rawTime 
