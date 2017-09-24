@@ -1,5 +1,5 @@
 import serial, time, numpy
-from logtemps import log_temperature_data
+from logtemps import log_temperature_data, log_alert
 
 
 PORT = "/dev/tty.usbmodem621"
@@ -14,6 +14,9 @@ FAN = 0
 CELSIUS = 2
 HUMIDITY = 4
 GOAL_TEMP = 6
+
+ALERT = 0
+ALERT_TYPE = 1
 
 ser = serial.Serial(PORT, BAUD)
 
@@ -39,7 +42,7 @@ while 1:
   data = str(raw).split()
 
   # all processing happens only when there are input lines
-  if len(data) >2:
+  if len(data) >1:
 
     # --- set up the current time info ---
     rawTime = time.time()
@@ -48,15 +51,20 @@ while 1:
     displayTime = time.strftime("%H:%M")
     currentMinute  = time.strftime("%M")
 
-    if data[FAN] == "ALERT":
-      print("%s ALERT! The adaptive temperature has changed. The goal is now %s Celsius."
-      % (displayTime, data[CELSIUS]))
-      if LOG_TO_CLOUD:
-        log_alert( displayDate, displayTime, "Adaptive temperature now %s" % data[CELSIUS])
+    if data[ALERT] == "ALERT":
+      if data[ALERT_TYPE] == "RESTARTED":
+        print("%s ALERT! The controller restarted" % displayTime)
+        if LOG_TO_CLOUD:
+          log_alert( displayDate, displayTime, "Controller restarted")
+      if data[ALERT_TYPE] == "ADAPTING":
+        print("%s ALERT! The adaptive temperature has changed. The goal is now %s Celsius."
+        % (displayTime, data[CELSIUS]))
+        if LOG_TO_CLOUD:
+          log_alert( displayDate, displayTime, "Adaptive temperature now %s" % data[CELSIUS])
     else:
       print("%s Temp: %s C, Goal: %s Fan %s (prev duty cycle %.0f%%)"
             % (displayTime, data[CELSIUS], data[GOAL_TEMP], data[FAN], DC*100))
-      if data[FAN] != "IDLE":
+      if data[FAN] == "OPERATING":
         fanOns += 1
       else:
         fanOffs += 1
@@ -75,7 +83,7 @@ while 1:
         if fanOnOffs > 0:
           DC = fanOns / float(fanOnOffs)
         else:
-          DC = 1
+          DC = 0
   
         avgTemp = numpy.mean(allTemp)
   
@@ -84,13 +92,13 @@ while 1:
         if LOG_TO_CLOUD:
           log_temperature_data( displayDate, displayTime, goalTempSpec, goalTempAdap, avgTemp, minTemp, maxTemp, DC )
 
-      # --- reset accumulators ---
-      lastReport = rawTime 
-      fanOns  = 0
-      fanOffs = 0
-      fanOnOffs = 0
-      maxTemp = theTemp
-      minTemp = theTemp
-      allTemp = []
+        # --- reset accumulators ---
+        lastReport = rawTime 
+        fanOns  = 0
+        fanOffs = 0
+        fanOnOffs = 0
+        maxTemp = theTemp
+        minTemp = theTemp
+        allTemp = []
 
 

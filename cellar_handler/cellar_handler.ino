@@ -28,6 +28,7 @@ int samplesThisPeriod = 0;    // Counts 0..119 and repeats
 int totalOnes = 0;            // Counts only samples with fan on
 
 // --- alert definitions ---
+bool restarted   = true;
 bool doorOpen    = false;
 bool doorClose   = false;
 bool tempAdapted = false;
@@ -73,13 +74,13 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   if (totalOnes > SAMPLES_PER_PERIOD && adapTemp <= NEVER_EXCEED) {
     // --- More than 25% duty cycle over 4 periods, increase temp  ---
     adapTemp += 0.1;
-    tempAdapted = True;
+    tempAdapted = true;
   }
   else if (totalOnes < SAMPLES_PER_PERIOD/2) {
     if (adapTemp > TARGET_TEMP) {
       // --- Less than 12.5% duty cycle, if above target temp, reduce temp ---
       adapTemp -= 0.1;
-      tempAdapted = True;
+      tempAdapted = true;
     }
   }
   // wrap the duty cycle counters
@@ -113,11 +114,16 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
 
   // alerts first
 
+  if( restarted ) {
+    Serial.println("ALERT RESTARTED ");
+    restarted=false;
+  }
+
   if( tempAdapted ) {
-    Serial.print("ALERT -- ");
+    Serial.print("ALERT ADAPTING ");
     Serial.print(adapTemp);
     Serial.println(" is the new temperature goal");
-    tempAdapted=False;
+    tempAdapted=false;
   }
 
   // Now the reporting data
