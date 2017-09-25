@@ -9,7 +9,6 @@
 #define NEVER_EXCEED 25         // Don’t ever adapt higher than 77*F
 
 #define USEC_PER_SAMPLE 5000    // Five seconds per sample
-#define SAMPLES_PER_PERIOD 120  // Ten minute evaluation period
 
 // Set the DHT type: uncomment whatever type you're using!
 //#define DHTTYPE DHT11   // DHT 11
@@ -23,8 +22,12 @@ int numSamples=0;
 bool fanOn=false;
 
 // vars for adaptive temperature and other duty-cycle driven things
+#define SAMPLES_PER_PERIOD 120              // Ten minute evaluation period
+#define FULL_LOAD_DC SAMPLES_PER_PERIOD     // 25% duty cycle is full load (assumes 4 periods)
+#define LITE_LOAD_DC SAMPLES_PER_PERIOD*0.6 // 15% duty cycle is light load (assumes 4 periods)
+
 float adapTemp = TARGET_TEMP;
-int onesPerPeriod = [0, 0, 0, 0]; // Duty cycle counter per period
+int fanOnCount = [0, 0, 0, 0]; // Duty cycle counter per period
 int period = 0;                   // Counts 0..3 and repeat
 int samplesThisPeriod = 0;        // Counts 0..119 and repeats
 
@@ -50,7 +53,7 @@ void loop() {
   numSamples += 1;
   samplesThisPeriod +=1;
   if (fanOn == true) {
-    onesPerPeriod[period] += 1;
+    fanOnCount[period] += 1;
   }
 
 // ...handle duty cycle processing...
@@ -59,27 +62,27 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   // --- end of period, time to reckon, adapt, and wrap ---
 
   // reckon
-  totalOnes =  onesPerPeriod[0];
-  totalOnes += onesPerPeriod[1];
-  totalOnes += onesPerPeriod[2];
-  totalOnes += onesPerPeriod[3];
+  totalOnes =  fanOnCount[0];
+  totalOnes += fanOnCount[1];
+  totalOnes += fanOnCount[2];
+  totalOnes += fanOnCount[3];
 
   
   // adapt
-  if (totalOnes > SAMPLES_PER_PERIOD && adapTemp <= NEVER_EXCEED) {
-    // --- More than 25% duty cycle over 4 periods, increase temp  ---
+  if (totalOnes > FULL_LOAD_DC && adapTemp <= NEVER_EXCEED) {
+    // --- More than approved duty cycle: increase temp  ---
     adapTemp += 0.1;
   }
-  else if (totalOnes < SAMPLES_PER_PERIOD/2) {
+  else if (totalOnes < LITE_LOAD_DC) {
     if (adapTemp > TARGET_TEMP) {
-      // --- Less than 12.5% duty cycle, if above target temp, reduce temp ---
+      // --- Under light duty cycle level: reduce temp ---
       adapTemp -= 0.1;
     }
   }
   // wrap
   period = (period + 1) % 4;  // Increment the period 0,1,2,3,0,1,2,3...
   samplesThisPeriod = 0;
-  onesPerPeriod[period] = 0;
+  fanOnCount[period] = 0;
 }
 
   //...then take readings...
