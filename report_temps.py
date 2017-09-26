@@ -56,11 +56,16 @@ while 1:
         print("%s ALERT! The controller restarted" % displayTime)
         if LOG_TO_CLOUD:
           log_alert( displayDate, displayTime, "Controller restarted")
-      if data[ALERT_TYPE] == "ADAPTING":
-        print("%s ALERT! The adaptive temperature has changed. The goal is now %s Celsius."
+      elif data[ALERT_TYPE] == "ADAPT_UP":
+        print("%s ALERT! The goal temperature has been raised to %s Celsius."
         % (displayTime, data[CELSIUS]))
         if LOG_TO_CLOUD:
-          log_alert( displayDate, displayTime, "Adaptive temperature now %s" % data[CELSIUS])
+          log_alert( displayDate, displayTime, "Goal temperature raised to %s° C" % data[CELSIUS])
+      elif data[ALERT_TYPE] == "ADAPT_DN":
+        print("%s ALERT! The goal temperature has been lowered to %s Celsius."
+        % (displayTime, data[CELSIUS]))
+        if LOG_TO_CLOUD:
+          log_alert( displayDate, displayTime, "Goal temperature lowered to %s° C" % data[CELSIUS])
     else:
       print("%s Temp: %s C, Goal: %s Fan %s (prev duty cycle %.0f%%)"
             % (displayTime, data[CELSIUS], data[GOAL_TEMP], data[FAN], DC*100))
