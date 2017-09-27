@@ -3,12 +3,12 @@
 // Adapted from example testing sketch for DHT sensors by ladyada
 
 #include "DHT.h"
+#include <EEPROM.h>
 
-#define TARGET_TEMP 17.5    // Maintain this temp if you can
+// --- Master definitions ---
+#define FW_VERSION 4
+#define TARGET_TEMP 20      // Maintain this temp if you can
 #define NEVER_EXCEED 25     // Don’t ever adapt higher than 77*F
-
-#define USEC_PER_SAMPLE 5000    // Five seconds per sample
-#define SAMPLES_PER_PERIOD 120  // Ten minute evaluation period for duty cycle
 
 // --- DHT definitions ---
 // Set pin and type
@@ -17,6 +17,10 @@
 // Initialize sensor
 DHT dht(DHTPIN, DHTTYPE);
 
+// --- general config values ---
+
+#define USEC_PER_SAMPLE 5000    // Five seconds per sample
+#define SAMPLES_PER_PERIOD 120  // Ten minute evaluation period for duty cycle
 int numSamples=0;
 bool fanOn=false;
 
@@ -27,31 +31,62 @@ int period = 0;               // Counts 0..3 and repeat
 int samplesThisPeriod = 0;    // Counts 0..119 and repeats
 int totalOnes = 0;            // Counts only samples with fan on
 
+// --- EEPROM locations ---
+int EE_adapTemp = 0;
+int EE_nextFree = EE_adapTemp+sizeof(adapTemp);
+
 // --- alert definitions ---
 bool restarted   = true;
+bool restored    = false;
 bool doorOpen    = false;
 bool doorClose   = false;
 bool tempAdaptUp = false;
 bool tempAdaptDown = false;
 
 
+// ===== Utility Functions =====
+
+// restoreGoalTemp() attempts to read the goal temperature that was saved
+// to EEPROM. Returns: true if successful. A false return means missing or
+// incompatible (future idea, e.g. keyed by version) data.
+//
+bool restoreGoalTemp() {
+  float t;
+  EEPROM.get(EE_adapTemp, t);
+  if( t>0 ){
+    adapTemp = t;
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+// saveGoalTemp() just writes the goal temp (future: general status structure?)
+// to EEPROM. Just assume that it worked.
+//
+void saveGoalTemp() {
+  EEPROM.put(EE_adapTemp, adapTemp);
+}
+
 
 // =========== The Arduino setup function ===========
+//
 void setup() {
+  // initialize serial, led, and sensors.
   Serial.begin(9600);
-
-  // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
-
   dht.begin();
+
+  restored = restoreGoalTemp();
 }
 
 
 // =========== The Arduino loop ==============
+//
 void loop() {
   
   // Wait for next sample interval, then bump counters...
-  
   delay(USEC_PER_SAMPLE);
   numSamples += 1;
   samplesThisPeriod +=1;
@@ -60,7 +95,6 @@ void loop() {
   }
 
 // ...handle duty cycle processing...
-
 if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   // --- end of period; now time to reckon, adapt, and wrap ---
 
@@ -76,12 +110,14 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
     // --- More than 25% duty cycle over 4 periods, increase temp  ---
     adapTemp += 0.1;
     tempAdaptUp = true;
+    saveGoalTemp();
   }
   else if (totalOnes < SAMPLES_PER_PERIOD/2) {
     if (adapTemp > TARGET_TEMP) {
       // --- Less than 12.5% duty cycle, if above target temp, reduce temp ---
       adapTemp -= 0.1;
       tempAdaptDown = true;
+      saveGoalTemp();
     }
   }
   // wrap the duty cycle counters
@@ -91,9 +127,6 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
 }
 
   //...then take readings...
-  
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   float h = dht.readHumidity();
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
@@ -102,7 +135,7 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
 
   // Check if any reads failed and exit early (to try again).
   if (isnan(h) || isnan(t) || isnan(f)) {
-    Serial.println("Failed to read from DHT sensor!");
+    Serial.println("ALERT: Failed to read from DHT sensor!");
     return;
   }
 
@@ -116,22 +149,29 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   // alerts first
 
   if( restarted ) {
-    Serial.println("ALERT RESTARTED ");
-    restarted=false;
+    Serial.print("ALERT CONTROLLER RESTART (Firmware v.");
+    Serial.print(FW_VERSION);
+    Serial.print(") ");
+    if( restored ) Serial.print("restored ");
+    else Serial.print("default ");
+    Serial.print(adapTemp);
+    Serial.print(" C goal");
+    Serial.println("");
+    restarted=false;    
   }
 
   if( tempAdaptUp ) {
     Serial.print("ALERT ADAPT_UP ");
     Serial.print(adapTemp);
     Serial.println(" is the new temperature goal");
-    tempAdapted=false;
+    tempAdaptUp=false;
   }
 
   if( tempAdaptDown ) {
     Serial.print("ALERT ADAPT_DN ");
     Serial.print(adapTemp);
     Serial.println(" is the new temperature goal");
-    tempAdapted=false;
+    tempAdaptDown=false;
   }
 
   // Now the reporting data
