@@ -124,14 +124,14 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
     Serial.print("ALERT ADAPT_UP ");
     Serial.print(adapTemp);
     Serial.println(" is the new temperature goal");
-    tempAdapted=false;
+    tempAdaptUp=false;
   }
 
   if( tempAdaptDown ) {
     Serial.print("ALERT ADAPT_DN ");
     Serial.print(adapTemp);
     Serial.println(" is the new temperature goal");
-    tempAdapted=false;
+    tempAdaptDown=false;
   }
 
   // Now the reporting data
