@@ -9,6 +9,8 @@
 #define FW_VERSION 4
 #define TARGET_TEMP 20      // Maintain this temp if you can
 #define NEVER_EXCEED 25     // Don’t ever adapt higher than 77*F
+#define MAX_DUTY_CYCLE 0.3  // Adapt temp up if exceeds this
+#define MIN_DUTY_CYCLE 0.2  // Adapt down if less loaded than this
 
 // --- DHT definitions ---
 // Set pin and type
@@ -103,22 +105,20 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   totalOnes += onesPerPeriod[1];
   totalOnes += onesPerPeriod[2];
   totalOnes += onesPerPeriod[3];
-
+  dutyCycle = totalOnes / (SAMPLES_PER_PERIOD * 4)
   
   // adapt temperature if needed
-  if (totalOnes > SAMPLES_PER_PERIOD && adapTemp <= NEVER_EXCEED) {
-    // --- More than 25% duty cycle over 4 periods, increase temp  ---
+  if (dutyCycle > MAX_DUTY_CYCLE && adapTemp <= NEVER_EXCEED) {
+    // --- Over max duty cycle, increase goal temp a bit ---
     adapTemp += 0.1;
     tempAdaptUp = true;
     saveGoalTemp();
   }
-  else if (totalOnes < SAMPLES_PER_PERIOD/2) {
-    if (adapTemp > TARGET_TEMP) {
-      // --- Less than 12.5% duty cycle, if above target temp, reduce temp ---
-      adapTemp -= 0.1;
-      tempAdaptDown = true;
-      saveGoalTemp();
-    }
+  else if (dutyCycle < MIN_DUTY_CYCLE && adapTemp > TARGET_TEMP) {
+    // --- Duty cycle below relaxed threshold, reduce goal temp a bit ---
+    adapTemp -= 0.1;
+    tempAdaptDown = true;
+    saveGoalTemp();
   }
   // wrap the duty cycle counters
   period = (period + 1) % 4;  // Increment the period 0,1,2,3,0,1,2,3...
