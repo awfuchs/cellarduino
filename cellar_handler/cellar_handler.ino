@@ -6,7 +6,7 @@
 #include <EEPROM.h>
 
 // --- Master definitions ---
-#define FW_VERSION 4
+#define FW_VERSION 5
 #define TARGET_TEMP 20      // Maintain this temp if you can
 #define NEVER_EXCEED 25     // Don’t ever adapt higher than 77*F
 #define MAX_DUTY_CYCLE 0.3  // Adapt temp up if exceeds this
@@ -88,6 +88,8 @@ void setup() {
 //
 void loop() {
   
+  float dutyCycle;
+  
   // Wait for next sample interval, then bump counters...
   delay(USEC_PER_SAMPLE);
   numSamples += 1;
@@ -105,16 +107,16 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   totalOnes += onesPerPeriod[1];
   totalOnes += onesPerPeriod[2];
   totalOnes += onesPerPeriod[3];
-  dutyCycle = totalOnes / (SAMPLES_PER_PERIOD * 4)
+  dutyCycle = float(totalOnes) / float(SAMPLES_PER_PERIOD * 4);
   
   // adapt temperature if needed
-  if (dutyCycle > MAX_DUTY_CYCLE && adapTemp <= NEVER_EXCEED) {
+  if ( (dutyCycle > MAX_DUTY_CYCLE) && (adapTemp <= NEVER_EXCEED) ) {
     // --- Over max duty cycle, increase goal temp a bit ---
     adapTemp += 0.1;
     tempAdaptUp = true;
     saveGoalTemp();
   }
-  else if (dutyCycle < MIN_DUTY_CYCLE && adapTemp > TARGET_TEMP) {
+  else if ( (dutyCycle < MIN_DUTY_CYCLE) && (adapTemp > TARGET_TEMP) ) {
     // --- Duty cycle below relaxed threshold, reduce goal temp a bit ---
     adapTemp -= 0.1;
     tempAdaptDown = true;
