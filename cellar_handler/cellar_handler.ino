@@ -149,13 +149,11 @@ if (samplesThisPeriod >= SAMPLES_PER_PERIOD) {
   // alerts first
 
   if( restarted ) {
-    Serial.print("ALERT CONTROLLER RESTART (Firmware v.");
-    Serial.print(FW_VERSION);
-    Serial.print(") ");
-    if( restored ) Serial.print("restored ");
-    else Serial.print("default ");
-    Serial.print(adapTemp);
-    Serial.print(" C goal");
+    Serial.print("ALERT RESTARTED FW_ver ");
+    Serial.print(FW_VERSION);                       // field 3
+    if( restored ) Serial.print(" restored ");      // field 4
+    else Serial.print(" default ");
+    Serial.print(adapTemp);                         // field 5
     Serial.println("");
     restarted=false;    
   }
