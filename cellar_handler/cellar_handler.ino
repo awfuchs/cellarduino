@@ -7,7 +7,7 @@
 
 // --- Master definitions ---
 #define FW_VERSION 5
-#define TARGET_TEMP 20      // Maintain this temp if you can
+#define TARGET_TEMP 18      // Maintain this temp if you can
 #define NEVER_EXCEED 25     // Don’t ever adapt higher than 77*F
 #define MAX_DUTY_CYCLE 0.3  // Adapt temp up if exceeds this
 #define MIN_DUTY_CYCLE 0.2  // Adapt down if less loaded than this
@@ -71,6 +71,17 @@ void saveGoalTemp() {
   EEPROM.put(EE_adapTemp, adapTemp);
 }
 
+// initializeDcCounters() puts a nominal mid-value fake history into the
+// counter array.
+//
+void initializeDcCounters() {
+  float fakeDc   = (MAX_DUTY_CYCLE + MIN_DUTY_CYCLE) / 2;
+  int fakeFanOns = SAMPLES_PER_PERIOD * fakeDc;
+  onesPerPeriod[0] = fakeFanOns;
+  onesPerPeriod[1] = fakeFanOns;
+  onesPerPeriod[2] = fakeFanOns;
+  onesPerPeriod[3] = fakeFanOns;
+}
 
 // =========== The Arduino setup function ===========
 //
@@ -81,6 +92,7 @@ void setup() {
   dht.begin();
 
   restored = restoreGoalTemp();
+  initializeDcCounters();
 }
 
 
