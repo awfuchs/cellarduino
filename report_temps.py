@@ -17,6 +17,9 @@ GOAL_TEMP = 6
 
 ALERT = 0
 ALERT_TYPE = 1
+ALERT_RESTART_VER = 3
+ALERT_RESTART_MODE = 4
+ALERT_RESTART_TEMP = 5
 
 ser = serial.Serial(PORT, BAUD)
 
@@ -53,9 +56,12 @@ while 1:
 
     if data[ALERT] == "ALERT":
       if data[ALERT_TYPE] == "RESTARTED":
-        print("%s ALERT! The controller restarted" % displayTime)
+        alertText="Controller restarted FW ver. %s: %s goal %s" \
+          % (data[ALERT_RESTART_VER], data[ALERT_RESTART_MODE], data[ALERT_RESTART_TEMP])
+
+        print("%s ALERT! %s" % (displayTime, alertText))
         if LOG_TO_CLOUD:
-          log_alert( displayDate, displayTime, "Controller restarted")
+          log_alert( displayDate, displayTime, alertText )
       elif data[ALERT_TYPE] == "ADAPT_UP":
         print("%s ALERT! The goal temperature has been raised to %s Celsius."
         % (displayTime, data[CELSIUS]))
