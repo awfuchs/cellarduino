@@ -68,10 +68,13 @@ def log_temperature_data( date, time, goalTempSpec, goalTempAdap, tempAvg, tempM
   body = {
     'values': values
   }
-  result = service.spreadsheets().values().append(
-    spreadsheetId=spreadsheetId, range=rangeName,
-    valueInputOption='USER_ENTERED', body=body).execute()
-
+  try:
+    result = service.spreadsheets().values().append(
+      spreadsheetId=spreadsheetId, range=rangeName,
+      valueInputOption='USER_ENTERED', body=body).execute()
+  except HttpError as e:
+    print("ERROR!!!  HTTP error while trying to append data:")
+    print(e)
 
 def log_alert( date, time, text ):
   credentials = get_credentials()
@@ -94,10 +97,13 @@ def log_alert( date, time, text ):
   body = {
     'values': values
   }
-  result = service.spreadsheets().values().append(
-    spreadsheetId=spreadsheetId, range=rangeName,
-    valueInputOption='USER_ENTERED', body=body).execute()
-
+  try:
+    result = service.spreadsheets().values().append(
+      spreadsheetId=spreadsheetId, range=rangeName,
+      valueInputOption='USER_ENTERED', body=body).execute()
+  except HttpError as e:
+    print("ERROR!!!  HTTP error while trying to append data:")
+    print(e)
 
 if __name__ == '__main__':
     main()
