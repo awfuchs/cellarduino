@@ -4,7 +4,8 @@ from __future__ import print_function
 import httplib2
 import os
 
-from apiclient import discovery
+from apiclient import discovery, errors
+
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
