@@ -56,7 +56,7 @@ shows min/max/average temperatures and the fan [duty cycle](https://en.wikipedia
 
 ### Arduino source code
 
-The Arduino code is contained in [cellar_handler.ino](https://github.com/awfuchs/cellarduino/blob/master/cellar_handler.ino)
+The Arduino code is contained in [cellar_handler.ino](https://github.com/awfuchs/cellarduino/blob/master/cellar_handler/cellar_handler.ino)
 
 ### Laptop/concentrator source code
 The laptop code runs in Python 2.7, and is contained in the following files:
